@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link rel="stylesheet" href="style.css">
+
+    <title>WebGL Template</title>
+  </head>
+
+  <body>
+    <canvas id="webgl-canvas"></canvas>
+
+    <script id="vertex-shader" type="x-shader/x-vertex">
+      attribute vec2 a_position;
+      uniform mat3 u_modelMatrix2d;
+      uniform mat4 u_viewMatrix;
+      uniform mat4 u_projectionMatrix;
+
+      void main() {
+        gl_Position = u_projectionMatrix * u_viewMatrix * vec4((vec3(a_position, 1.0) * u_modelMatrix2d).xy, 0.0, 1.0);
+      }
+    </script>
+
+    <script id="fragment-shader" type="x-shader/x-fragment">
+      precision mediump float;
+
+      void main() {
+        gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);
+      }
+    </script>
+
+    <script type="text/javascript" src="helpers.js"></script>
+    <script type="text/javascript" src="script.js"></script>
+  </body>
+</html>
