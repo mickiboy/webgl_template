@@ -9,72 +9,72 @@ var projectionMatrixUniformLocation;
 var positionAttributeLocation;
 var positionBuffer;
 
-/** WebGL initialisieren (wird nur einmal gemacht) */
+/** Initialize WebGL (only once) */
 function init() {
-    /** Canvas-Element abrufen */
+    /** Get canvas element */
     var canvas = document.getElementById("webgl-canvas");
 
-    /** WebGL-Kontext im Canvas erstellen */
+    /** Create a WebGL context in the canvas */
     gl = canvas.getContext("webgl");
 
-    /** Abbrechen, falls WebGL-Kontext nicht geladen werden konnte */
+    /** Abort if creating a context failed */
     if (!gl) return false;
 
-    /** Löschfarbe setzen */
+    /** Set clear color */
     gl.clearColor(0.2, 0.2, 0.2, 1.0);
 
-    /** [helpers.js] Shader-Programm erstellen */
+    /** [helpers.js] Create shader program */
     program = createShaderProgram(gl, "vertex-shader", "fragment-shader");
 
-    /** Binde die Uniforms an die JavaScript-Variablen (es sind im Prinzip IDs) */
+    /** Bind uniforms to JS variables (think of IDs) */
     modelMatrix2dUniformLocation = gl.getUniformLocation(program, "u_modelMatrix2d");
     viewMatrixUniformLocation = gl.getUniformLocation(program, "u_viewMatrix");
     projectionMatrixUniformLocation = gl.getUniformLocation(program, "u_projectionMatrix");
 
-    /** Eine Anbindung für die Daten an den Vertex-Shader erstellen */
+    /** Create a binding for the vertex data to the shader */
     positionAttributeLocation = gl.getAttribLocation(program, "a_position");
 
-    /** Puffer für Vertex-Daten erstellen */
+    /** Create buffer for the vertex data */
     positionBuffer = gl.createBuffer();
 
-    /** Array mit Vertex-Daten erstellen */
+    /** Create array with vertex data */
     var vertices = [
         /** x, y */
-        0.0, 0.0,  /** Vertex links unten */
-        0.0, 0.5,  /** Vertex links oben */
-        0.5, 0.0,  /** Vertex rechts unten */
+        0.0, 0.0,  /** Vertex bottom-left */
+        0.0, 0.5,  /** Vertex top-left */
+        0.5, 0.0,  /** Vertex bottom-right */
     ];
 
-    /** Den Puffer an WebGL anbinden */
+    /** Bind buffer to WebGL */
     gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
 
-    /** Den angebundenen Buffer mit dem Array füllen (Hinweis: nur angebundene Puffer können mit Daten gefüllt werden!) */
+    /** Fill bound buffer with array (only bound buffers can be filled with data!) */
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
 
     return true;
 }
 
-/** Muss aufgerufen werden, sobald sich Daten ändern */
+/** Must be called when data is modified */
 function render() {
-    /** [helpers.js] Canvas-Größe setzen */
+    /** [helpers.js] Set canvas size */
     resize(gl);
 
-    /** Den Backbuffer mit der gesetzten Löschfarbe füllen */
+    /** Clear back buffer with the previously set clear color */
     gl.clear(gl.COLOR_BUFFER_BIT);
 
-    /** Shader-Programm aktivieren */
+    /** Activate shader program */
     gl.useProgram(program);
 
-    /** a_position für die folgenden Funktionen anbinden */
+    /** Bind a_position for the following functions */
     gl.enableVertexAttribArray(positionAttributeLocation);
 
-    /** Den Puffer anbinden */
+    /** Bind the vertex buffer */
     gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
 
-    /** Wichtige Parameter an den Vertex-Shader übergeben */
+    /** Set important parameters */
     gl.vertexAttribPointer(positionAttributeLocation, 2, gl.FLOAT, false, 0, 0);
 
-    /** In Weltkoordinaten umwandeln (Local -> World = Model) */
+    /** Convert to world coordinates (Local -> World = Model) */
     {
         var translation = [
             1.0, 0.0, 0.0,
@@ -99,7 +99,7 @@ function render() {
         gl.uniformMatrix3fv(modelMatrix2dUniformLocation, false, modelMatrix.data);
     }
 
-    /** TODO In Kamerakoordinaten umwandeln (World -> Eye = View) */
+    /** TODO Convert to camera coordinates (World -> Eye = View) */
     {
         var identity = [
             1.0, 0.0, 0.0, 0.0,
@@ -113,7 +113,7 @@ function render() {
         gl.uniformMatrix4fv(projectionMatrixUniformLocation, false, projectionMatrix.data);
     }
 
-    /** TODO In Fensterkoordinaten umwandeln (View -> Clip = Projection) */
+    /** TODO Convert to viewport coordinates (View -> Clip = Projection) */
     {
         var identity = [
             1.0, 0.0, 0.0, 0.0,
@@ -127,10 +127,10 @@ function render() {
         gl.uniformMatrix4fv(viewMatrixUniformLocation, false, viewMatrix.data);
     }
 
-    /** Vertizen an WebGL übergeben (1 Draw call) */
+    /** Submit vertices to WebGL (1 draw call) */
     gl.drawArrays(gl.TRIANGLES, 0, 3);
 
-    /** Bei Bedarf neu rendern */
+    /** Repeat render function */
     requestAnimationFrame(render);
 }
 

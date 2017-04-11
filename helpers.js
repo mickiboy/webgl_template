@@ -118,13 +118,13 @@ class Matrix3d {
 }
 
 /**
- * Erstellt ein Shader-Programm aus den gegebenen Quellcodes des Vertex- und
- * des Fragment-Shaders.
+ * Creates a shader program from the given source code of the vertex and
+ * fragment shader.
  *
- * @param gl WebGL-Kontext
- * @param vertexShader ID des Vertex-Shaders
- * @param fragmentShader ID des Fragment-Shaders
- * @return Programm-ID für WebGL
+ * @param gl WebGL context
+ * @param vertexShader ID of the vertex shader
+ * @param fragmentShader ID of the fragment shader
+ * @return Program ID for WebGL
  */
 function createShaderProgram(gl, vertexShader, fragmentShader) {
     var compiledVertexShader = priv_compileShader(gl, gl.VERTEX_SHADER, document.getElementById(vertexShader).text);
@@ -142,13 +142,13 @@ function createShaderProgram(gl, vertexShader, fragmentShader) {
     gl.deleteProgram(program);
 }
 
-/** Canvas-Größe gleich der inneren Browser-Fläche setzen */
+/** Set canvas size to the current browser size */
 function resize(gl) {
-    /** Erst die Größe des Canvas-Elements anpassen */
+    /** First modify the canvas size */
     gl.canvas.width = gl.canvas.clientWidth;
     gl.canvas.height = gl.canvas.clientHeight;
 
-    /** Dann die neue Größe des Canvas-Elements an WebGL weitergeben */
+    /** Then set the viewport of WebGL */
     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
 }
 
