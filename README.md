@@ -10,7 +10,7 @@ reloading while saving modified files.
 
 ## Instructions
 
-1. After cloning, run ``npm update`` in the directory, where you cloned this
+1. After cloning, run ``npm install`` in the directory, where you cloned this
    repository.
 2. Run ``gulp``. It will listen to any changes in your files and automatically
    reloads your browser.
