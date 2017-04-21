@@ -56,8 +56,12 @@ function init() {
 
 /** Must be called when data is modified */
 function render() {
-    /** [helpers.js] Set canvas size */
-    resize(gl);
+    /** Set the canvas size to the current size of the browser content */
+    gl.canvas.width = gl.canvas.clientWidth;
+    gl.canvas.height = gl.canvas.clientHeight;
+
+    /** Then set the viewport of WebGL */
+    gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
 
     /** Clear back buffer with the previously set clear color */
     gl.clear(gl.COLOR_BUFFER_BIT);
@@ -77,54 +81,57 @@ function render() {
     /** Convert to world coordinates (Local -> World = Model) */
     {
         var translation = [
-            1.0, 0.0, 0.0,
-            0.0, 1.0, 0.0,
-            0.0, 0.0, 1.0,
+            [1.0, 0.0, 0.0],
+            [0.0, 1.0, 0.0],
+            [0.0, 0.0, 1.0],
         ];
 
         var rotation = [
-            1.0, 0.0, 0.0,
-            0.0, 1.0, 0.0,
-            0.0, 0.0, 1.0,
+            [1.0, 0.0, 0.0],
+            [0.0, 1.0, 0.0],
+            [0.0, 0.0, 1.0],
         ];
 
         var scale = [
-            1.0, 0.0, 0.0,
-            0.0, 1.0, 0.0,
-            0.0, 0.0, 1.0,
+            [1.0, 0.0, 0.0],
+            [0.0, 1.0, 0.0],
+            [0.0, 0.0, 1.0],
         ];
 
-        var modelMatrix = new Matrix2d(translation).multiply(rotation).multiply(scale);
+        var modelMatrix = math.chain(math.matrix(translation)).multiply(rotation).multiply(scale).done();
+        var modelMatrixData = [].concat.apply([], modelMatrix.valueOf());
 
-        gl.uniformMatrix3fv(modelMatrix2dUniformLocation, false, modelMatrix.data);
+        gl.uniformMatrix3fv(modelMatrix2dUniformLocation, false, modelMatrixData);
     }
 
     /** TODO Convert to camera coordinates (World -> Eye = View) */
     {
         var identity = [
-            1.0, 0.0, 0.0, 0.0,
-            0.0, 1.0, 0.0, 0.0,
-            0.0, 0.0, 1.0, 0.0,
-            0.0, 0.0, 0.0, 1.0,
+            [1.0, 0.0, 0.0, 0.0],
+            [0.0, 1.0, 0.0, 0.0],
+            [0.0, 0.0, 1.0, 0.0],
+            [0.0, 0.0, 0.0, 1.0],
         ];
 
-        var projectionMatrix = new Matrix3d(identity);
+        var projectionMatrix = math.matrix(identity);
+        var projectionMatrixData = [].concat.apply([], projectionMatrix.valueOf());
 
-        gl.uniformMatrix4fv(projectionMatrixUniformLocation, false, projectionMatrix.data);
+        gl.uniformMatrix4fv(projectionMatrixUniformLocation, false, projectionMatrixData);
     }
 
     /** TODO Convert to viewport coordinates (View -> Clip = Projection) */
     {
         var identity = [
-            1.0, 0.0, 0.0, 0.0,
-            0.0, 1.0, 0.0, 0.0,
-            0.0, 0.0, 1.0, 0.0,
-            0.0, 0.0, 0.0, 1.0,
+            [1.0, 0.0, 0.0, 0.0],
+            [0.0, 1.0, 0.0, 0.0],
+            [0.0, 0.0, 1.0, 0.0],
+            [0.0, 0.0, 0.0, 1.0],
         ];
 
-        var viewMatrix = new Matrix3d(identity);
+        var viewMatrix = math.matrix(identity);
+        var viewMatrixData = [].concat.apply([], viewMatrix.valueOf());
 
-        gl.uniformMatrix4fv(viewMatrixUniformLocation, false, viewMatrix.data);
+        gl.uniformMatrix4fv(viewMatrixUniformLocation, false, viewMatrixData);
     }
 
     /** Submit vertices to WebGL (1 draw call) */
